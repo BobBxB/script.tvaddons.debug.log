@@ -47,7 +47,7 @@ class PastebinUploader(uploader.Uploader):
             elif html.upper().startswith('BAD API REQUEST'):
                 raise UploaderError(html[len('Bad API request, '):])
             else:
-                raise UploaderError('Unexpected Pastebin Response: %s' % (html))
+                raise UploaderError(html)
         except Exception as e:
             log_utils.log('Error (%s) during log upload: %s' % (str(e), url), log_utils.LOGWARNING)
             raise UploaderError(e)

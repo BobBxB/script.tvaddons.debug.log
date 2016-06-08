@@ -58,6 +58,7 @@ def __get_logs():
 def upload_logs():
     logs = __get_logs()
     results = {}
+    last_error = ''
     uploaders = uploader.Uploader.__class__.__subclasses__(uploader.Uploader)
     for log in logs:
         full_path, name = log
@@ -72,7 +73,7 @@ def upload_logs():
                 try:
                     log_service = log_class()
                     result = log_service.upload_log(log)
-                    if Functions.EMAIL in log_service.provides():
+                    if kodi.get_setting('email') and Functions.EMAIL in log_service.provides():
                         success = log_service.send_email()
                     else:
                         success = None
@@ -80,27 +81,28 @@ def upload_logs():
                     break
                 except UploaderError as e:
                     log_utils.log('Uploader Error: (%s) %s: %s' % (log_service.__class__.__name__, name, e), log_utils.LOGWARNING)
+                    last_error = str(e)
             else:
-                log_utils.log('No succesful upload for: %s' % (name), log_utils.LOGWARNING)
+                log_utils.log('No succesful upload for: %s Last Error: %s' % (name, last_error), log_utils.LOGWARNING)
             
     if results:
         if 'kodi.log' in results:
-            line1 = '%s: %s (%s)' % ('kodi.log', results['kodi.log']['result'], EMAIL_SENT[results['kodi.log']['email']])
+            line1 = '%s: %s [I](%s)[/I]' % ('kodi.log', results['kodi.log']['result'], EMAIL_SENT[results['kodi.log']['email']])
         else:
             line1 = ''
             
         if 'kodi.old.log' in results:
-            line2 = '%s: %s (%s)' % ('kodi.old.log', results['kodi.old.log'], EMAIL_SENT[results['kodi.log']['email']])
+            line2 = '%s: %s [I](%s)[/I]' % ('kodi.old.log', results['kodi.old.log'], EMAIL_SENT[results['kodi.log']['email']])
         else:
             line2 = ''
             
-        xbmcgui.Dialog().ok('Logs Uploaded', line1, line2)
+        xbmcgui.Dialog().ok(i18n('logs_uploaded'), line1, line2)
         log_utils.log('Log Uploads: %s' % (results), log_utils.LOGINFO)
     else:
-        kodi.notify('Unable to upload logs')
+        kodi.notify(i18n('logs_failed') % (last_error), duration=5000)
 
 def __confirm_upload():
-    return xbmcgui.Dialog().yesno(kodi.get_name(), 'Do you want to upload your logs?')
+    return xbmcgui.Dialog().yesno(kodi.get_name(), i18n('upload_question'))
     
 def main(argv=None):
     try:

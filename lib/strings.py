@@ -17,4 +17,7 @@
 """
 
 STRINGS = {
+    'logs_uploaded': 30000,
+    'logs_failed': 30001,
+    'upload_question': 30002
 }
