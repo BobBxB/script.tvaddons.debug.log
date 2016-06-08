@@ -1,6 +1,6 @@
 """
-    SALTS XBMC Addon
-    Copyright (C) 2015 tknorris
+    TVAddons Log Uploader Script
+    Copyright (C) 2016 tknorris
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -210,4 +210,3 @@ class ProgressDialog(object):
                 self.pd.update(percent, self.heading, msg)
             else:
                 self.pd.update(percent, line1, line2, line3)
-                

@@ -14,7 +14,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#30500"
-msgid "Log Email Address"
+msgid "Destination Email Address"
 msgstr ""
 
 msgctxt "#30501"

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="script.tvaddons.debug.log" name="TVAddons Log Uploader for Kodi" version="0.0.1" provider-name="TVAddons.ag">
     <requires>
-        <import addon="xbmc.python" version="2.12.0"/>
+        <import addon="xbmc.python" version="2.20.0"/>
     </requires>
-    <extension point="xbmc.python.script" library="default.py"/>
+    <extension point="xbmc.python.script" library="default.py">
+        <provides>executable</provides>
+    </extension>
     <extension point="xbmc.addon.metadata">
-        <summary lang="en">Uploads your logs to a sharable location</summary>
-        <description lang="en">This Addon uploads your logs to a sharable location and emails you the link when possible</description>
+        <summary lang="en">Uploads your logs to a shareable location</summary>
+        <description lang="en">This Addon uploads your logs to a shareable location and emails you the link when possible</description>
         <language></language>
         <platform>all</platform>
         <website>https://www.tvaddons.ag/</website>
