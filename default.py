@@ -23,7 +23,7 @@ from lib import log_utils
 from lib import kodi
 from lib.kodi import i18n
 from lib.uploaders import *
-from lib.uploaders.uploader import UploaderError, Functions
+from lib.uploaders.uploader import UploaderError
 
 def __enum(**enums):
     return type('Enum', (), enums)
@@ -44,6 +44,7 @@ FILES = [
 ]
 
 EMAIL_SENT = {True: 'Email Success', False: 'Email Failed', None: 'Email Not Supported'}
+SERVER_ORDER = {'tvaddons': 1, 'pastebin': 2, 'pastie': 3}
 
 def __get_logs():
     logs = []
@@ -60,6 +61,8 @@ def upload_logs():
     results = {}
     last_error = ''
     uploaders = uploader.Uploader.__class__.__subclasses__(uploader.Uploader)
+    uploaders = [klass for klass in uploaders if SERVER_ORDER[klass.name]]
+    uploaders.sort(key=lambda x: SERVER_ORDER[x.name])
     for log in logs:
         full_path, name = log
         if name != 'kodi.old.log' or kodi.get_setting('include_old') == 'true':
@@ -69,9 +72,9 @@ def upload_logs():
             for pattern, replace in REPLACES:
                 log = re.sub(pattern, replace, log)
             
-            for log_class in uploaders:
+            for klass in uploaders:
                 try:
-                    log_service = log_class()
+                    log_service = klass()
                     result = log_service.upload_log(log)
                     success = log_service.send_email() if kodi.get_setting('email') else None
                     results[name] = {'result': result, 'email': success}
@@ -89,12 +92,13 @@ def upload_logs():
             line1 = ''
             
         if 'kodi.old.log' in results:
-            line2 = '%s: %s [I](%s)[/I]' % ('kodi.old.log', results['kodi.old.log'], EMAIL_SENT[results['kodi.log']['email']])
+            line2 = '%s: %s [I](%s)[/I]' % ('kodi.old.log', results['kodi.old.log']['result'], EMAIL_SENT[results['kodi.log']['email']])
         else:
             line2 = ''
             
+        for log in results:
+            log_utils.log('Log Uploaded: %s: %s' % (log, results[log]['result']), log_utils.LOGNOTICE)
         xbmcgui.Dialog().ok(i18n('logs_uploaded'), line1, line2)
-        log_utils.log('Log Uploads: %s' % (results), log_utils.LOGINFO)
     else:
         kodi.notify(i18n('logs_failed') % (last_error), duration=5000)
 

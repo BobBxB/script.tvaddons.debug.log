@@ -31,10 +31,8 @@ class UploaderError(Exception):
 
 class Uploader(object):
     __metaclass__ = abc.ABCMeta
+    name = ''
 
-    def __init__(self):
-        pass
-    
     @abc.abstractmethod
     def upload_log(self, log):
         raise NotImplementedError

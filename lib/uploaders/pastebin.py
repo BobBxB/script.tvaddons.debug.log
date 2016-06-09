@@ -19,22 +19,22 @@ import urllib2
 import urlparse
 import urllib
 import uploader
-from uploader import Functions
 from uploader import UploaderError
 from .. import log_utils
 
-API_KEY = 'd34ab70196225eee022b176d99a4c274'
+API_KEY = '66554d00fa20ba30f4f8a5da7c5bfb2f'
 BASE_URL = 'http://pastebin.com'
 EXPIRATION = '1W'
 
 class PastebinUploader(uploader.Uploader):
+    name = 'pastebin'
+
     def upload_log(self, log):
         url = '/api/api_post.php'
         data = {'api_dev_key': API_KEY, 'api_option': 'paste', 'api_paste_code': log, 'api_paste_name': 'Kodi Log',
                 'api_paste_private': 0, 'api_paste_expire_date': EXPIRATION}
-        data = urllib.urlencode(data)
         url = urlparse.urljoin(BASE_URL, url)
-        req = urllib2.Request(url, data=data)
+        req = urllib2.Request(url, data=urllib.urlencode(data))
         try:
             res = urllib2.urlopen(req)
             html = res.read()
