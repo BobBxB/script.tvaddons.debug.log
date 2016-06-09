@@ -78,8 +78,8 @@ def upload_logs():
             else:
                 log_utils.log('No succesful upload for: %s Last Error: %s' % (name, last_error), log_utils.LOGWARNING)
             
-    args = [i18n('logs_uploaded')]
     if results:
+        args = [i18n('logs_uploaded')]
         for _, name in FILES:
             for service in results:
                 success = results[service]['service'].send_email(results[service])
