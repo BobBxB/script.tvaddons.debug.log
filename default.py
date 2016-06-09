@@ -68,8 +68,8 @@ def upload_logs():
                 try:
                     log_service = klass()
                     result = log_service.upload_log(log)
-                    results[log_service.name] = results.get(log_service.name, {'service': log_service})
-                    results[log_service.name][name] = {'result': result}
+                    results[log_service.name] = results.get(log_service.name, {'service': log_service, 'results': {}})
+                    results[log_service.name]['results'][name] = {'result': result}
                     break
                 except UploaderError as e:
                     log_utils.log('Uploader Error: (%s) %s: %s' % (log_service.__class__.__name__, name, e), log_utils.LOGWARNING)
@@ -78,15 +78,17 @@ def upload_logs():
                 log_utils.log('No successful upload for: %s Last Error: %s' % (name, last_error), log_utils.LOGWARNING)
             
     if results:
+        for service in results:
+            success = results[service]['service'].send_email(results[service]['results'])
+            results[service]['email'] = success
+
         args = [i18n('logs_uploaded')]
         for _, name in FILES:
             for service in results:
-                success = results[service]['service'].send_email(results[service])
-                results[service]['email'] = success
-                if name in results[service]:
-                    line = '%s: %s [I](%s)[/I]' % (name, results[service][name]['result'], EMAIL_SENT[results[service]['email']])
+                if name in results[service]['results']:
+                    line = '%s: %s [I](%s)[/I]' % (name, results[service]['results'][name]['result'], EMAIL_SENT[results[service]['email']])
                     args.append(line)
-                    log_utils.log('Log Uploaded: %s: %s' % (name, results[service][name]['result']), log_utils.LOGNOTICE)
+                    log_utils.log('Log Uploaded: %s: %s' % (name, results[service]['results'][name]['result']), log_utils.LOGNOTICE)
                     
         xbmcgui.Dialog().ok(*args)
     else:
