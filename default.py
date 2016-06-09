@@ -25,9 +25,6 @@ from lib.kodi import i18n
 from lib.uploaders import *
 from lib.uploaders.uploader import UploaderError
 
-def __enum(**enums):
-    return type('Enum', (), enums)
-
 REPLACES = [
     ('://.+?:.+?@', '//USER:PASSWORD@'),
     ('<user>.+?</user>', '<user>USER</user>'),
