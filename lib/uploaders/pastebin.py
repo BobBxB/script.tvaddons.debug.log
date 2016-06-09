@@ -45,7 +45,6 @@ class PastebinUploader(uploader.Uploader):
             else:
                 raise UploaderError(html)
         except Exception as e:
-            log_utils.log('Error (%s) during log upload: %s' % (str(e), url), log_utils.LOGWARNING)
             raise UploaderError(e)
             
     def send_email(self):

@@ -46,19 +46,14 @@ class TvaddonsUploader(uploader.Uploader):
                     if 'id' in result:
                         return urlparse.urljoin(BASE_URL, result['id'])
                     elif 'error' in result:
-                        log_utils.log('tvaddons error: %s' % (result['error']), log_utils.LOGWARNING)
                         raise UploaderError('tvaddons error: %s' % (result['error']))
                     else:
-                        log_utils.log('Unexpected Response: %s' % (result), log_utils.LOGWARNING)
                         raise UploaderError('Unexcepted Response: %s' % (result))
                 else:
-                        log_utils.log('Unexpected Response: %s' % (js_data), log_utils.LOGWARNING)
                         raise UploaderError('Unexcepted Response: %s' % (js_data))
             except ValueError as e:
-                log_utils.log('Unparseable Response: %s' % (html), log_utils.LOGWARNING)
-                raise UploaderError('Unparseable Resonse from tvaddons')
+                raise UploaderError('Unparseable Resonse from tvaddons: %s' % (html))
         except Exception as e:
-            log_utils.log('Error (%s) during log upload: %s' % (str(e), url), log_utils.LOGWARNING)
             raise UploaderError(e)
             
     def send_email(self):

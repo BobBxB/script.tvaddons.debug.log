@@ -41,7 +41,6 @@ class PastieUploader(uploader.Uploader):
         data = {'paste[body]': log, 'paste[parser]': 'plain_text', 'paste[authorization]': 'burger', 'paste[restricted]': 1}
         headers = {'User-Agent': USER_AGENT}
         url = urlparse.urljoin(BASE_URL, url)
-        log_utils.log(url)
         req = urllib2.Request(url, data=urllib.urlencode(data), headers=headers)
         try:
             opener = urllib2.build_opener(NoRedirection)
@@ -56,7 +55,6 @@ class PastieUploader(uploader.Uploader):
             else:
                 raise UploaderError('Unexcepted response from pastie: %s' % (res.getcode()), log_utils.LOGWARNING)
         except Exception as e:
-            log_utils.log('Error (%s) during log upload: %s' % (str(e), url), log_utils.LOGWARNING)
             raise UploaderError(e)
             
     def send_email(self):

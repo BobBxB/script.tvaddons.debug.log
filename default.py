@@ -106,7 +106,7 @@ def main(argv=None):
             
         if __confirm_upload():
             upload_logs()
-    except UploaderError as e:
+    except Exception as e:
         log_utils.log('Uploader Error: %s' % (e), log_utils.LOGWARNING)
         kodi.notify(msg=str(e))
 
