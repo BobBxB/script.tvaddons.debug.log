@@ -25,6 +25,18 @@ msgctxt "#30002"
 msgid "Do you want to upload your logs?"
 msgstr ""
 
+msgctxt "#30003"
+msgid "Email Successful"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Email Failed"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Email Not Supported"
+msgstr ""
+
 msgctxt "#30500"
 msgid "Destination Email Address"
 msgstr ""

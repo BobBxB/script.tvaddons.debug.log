@@ -19,5 +19,8 @@
 STRINGS = {
     'logs_uploaded': 30000,
     'logs_failed': 30001,
-    'upload_question': 30002
+    'upload_question': 30002,
+    'email_successful': 30003,
+    'email_failed': 30004,
+    'email_unsupported': 30005
 }

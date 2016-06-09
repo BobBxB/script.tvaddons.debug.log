@@ -36,7 +36,7 @@ FILES = [
     ('kodi.old.log', 'kodi.old.log')
 ]
 
-EMAIL_SENT = {True: 'Email Success', False: 'Email Failed', None: 'Email Not Supported'}
+EMAIL_SENT = {True: i18n('email_successful'), False: i18n('email_failed'), None: i18n('email_unsupported')}
 SERVER_ORDER = {'tvaddons': 1, 'pastebin': 2, 'pastie': 3}
 
 def __get_logs():
@@ -75,7 +75,7 @@ def upload_logs():
                     log_utils.log('Uploader Error: (%s) %s: %s' % (log_service.__class__.__name__, name, e), log_utils.LOGWARNING)
                     last_error = str(e)
             else:
-                log_utils.log('No succesful upload for: %s Last Error: %s' % (name, last_error), log_utils.LOGWARNING)
+                log_utils.log('No successful upload for: %s Last Error: %s' % (name, last_error), log_utils.LOGWARNING)
             
     if results:
         args = [i18n('logs_uploaded')]
