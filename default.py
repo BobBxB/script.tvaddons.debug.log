@@ -42,8 +42,7 @@ SERVER_ORDER = {'tvaddons': 1, 'pastebin': 2, 'pastie': 3}
 def __get_logs():
     logs = []
     log_path = kodi.translate_path('special://logpath')
-    for log in FILES:
-        file_name, name = log
+    for file_name, name in FILES:
         full_path = os.path.join(log_path, file_name)
         if os.path.exists(full_path):
             logs.append((full_path, name))
