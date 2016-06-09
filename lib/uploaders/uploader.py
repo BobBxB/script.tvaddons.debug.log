@@ -35,8 +35,14 @@ class Uploader(object):
 
     @abc.abstractmethod
     def upload_log(self, log):
+        '''
+        Return the url of the log, or raise a UploaderError on failure
+        '''
         raise NotImplementedError
 
     @abc.abstractmethod
     def send_email(self, log):
+        '''
+        Return True if email succeeds, False if it fails, or None if email isn't supported
+        '''
         raise NotImplementedError
