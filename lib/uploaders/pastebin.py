@@ -32,7 +32,7 @@ class PastebinUploader(uploader.Uploader):
     def upload_log(self, log):
         url = '/api/api_post.php'
         data = {'api_dev_key': API_KEY, 'api_option': 'paste', 'api_paste_code': log, 'api_paste_name': 'Kodi Log',
-                'api_paste_private': 0, 'api_paste_expire_date': EXPIRATION}
+                'api_paste_private': 1, 'api_paste_expire_date': EXPIRATION}
         url = urlparse.urljoin(BASE_URL, url)
         req = urllib2.Request(url, data=urllib.urlencode(data))
         try:
