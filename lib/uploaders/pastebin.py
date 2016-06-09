@@ -28,10 +28,6 @@ BASE_URL = 'http://pastebin.com'
 EXPIRATION = '1W'
 
 class PastebinUploader(uploader.Uploader):
-    @classmethod
-    def provides(cls):
-        return frozenset([Functions.UPLOAD, Functions.EMAIL])
-    
     def upload_log(self, log):
         url = '/api/api_post.php'
         data = {'api_dev_key': API_KEY, 'api_option': 'paste', 'api_paste_code': log, 'api_paste_name': 'Kodi Log',

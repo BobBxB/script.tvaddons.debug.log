@@ -26,10 +26,6 @@ class abstractclassmethod(classmethod):
         callable.__isabstractmethod__ = True
         super(abstractclassmethod, self).__init__(callable)
 
-class Functions():
-    UPLOAD = 'upload'
-    EMAIL = 'email'
-    
 class UploaderError(Exception):
     pass
 
@@ -39,10 +35,6 @@ class Uploader(object):
     def __init__(self):
         pass
     
-    @abstractclassmethod
-    def provides(cls):
-        raise NotImplementedError
-
     @abc.abstractmethod
     def upload_log(self, log):
         raise NotImplementedError

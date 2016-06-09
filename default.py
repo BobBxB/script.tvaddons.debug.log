@@ -73,10 +73,7 @@ def upload_logs():
                 try:
                     log_service = log_class()
                     result = log_service.upload_log(log)
-                    if kodi.get_setting('email') and Functions.EMAIL in log_service.provides():
-                        success = log_service.send_email()
-                    else:
-                        success = None
+                    success = log_service.send_email() if kodi.get_setting('email') else None
                     results[name] = {'result': result, 'email': success}
                     break
                 except UploaderError as e:
