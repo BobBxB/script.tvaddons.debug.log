@@ -28,10 +28,6 @@ from lib.uploaders.uploader import UploaderError
 def __enum(**enums):
     return type('Enum', (), enums)
 
-MODES = __enum(
-    UPLOAD_LOG='upload_log'
-)
-
 REPLACES = [
     ('://.+?:.+?@', '//USER:PASSWORD@'),
     ('<user>.+?</user>', '<user>USER</user>'),
