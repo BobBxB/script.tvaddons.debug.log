@@ -57,5 +57,5 @@ class PastieUploader(uploader.Uploader):
         except Exception as e:
             raise UploaderError(e)
             
-    def send_email(self):
+    def send_email(self, results):
         return None
