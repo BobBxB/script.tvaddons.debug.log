@@ -53,7 +53,7 @@ def upload_logs():
     results = {}
     last_error = ''
     uploaders = uploader.Uploader.__class__.__subclasses__(uploader.Uploader)
-    uploaders = [klass for klass in uploaders if SERVER_ORDER[klass.name]]
+    uploaders = [klass for klass in uploaders if SERVER_ORDER.get(klass.name, 100)]
     uploaders.sort(key=lambda x: SERVER_ORDER.get(x.name, 100))
     for log in logs:
         full_path, name = log
