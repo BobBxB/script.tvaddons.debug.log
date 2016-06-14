@@ -23,7 +23,6 @@ import uploader
 from uploader import UploaderError
 from .. import log_utils
 
-API_KEY = 'd34ab70196225eee022b176d99a4c274'
 BASE_URL = 'http://logs.tvaddons.ag/'
 EXPIRATION = 21600
 
@@ -56,5 +55,22 @@ class TvaddonsUploader(uploader.Uploader):
         except Exception as e:
             raise UploaderError(e)
             
-    def send_email(self, results):
-        return None
+    def send_email(self, email, results):
+        url = '/mail_logs.php'
+        data = {'email': email, 'results': results}
+        headers = {'Content-Type': 'application/json'}
+        url = urlparse.urljoin(BASE_URL, url)
+        req = urllib2.Request(url, data=json.dumps(data), headers=headers)
+        try:
+            res = urllib2.urlopen(req)
+            html = res.read()
+            js_data = json.loads(html)
+            if 'result' in js_data:
+                if js_data['result']:
+                    return True
+                else:
+                    raise UploaderError(js_data.get('msg', 'Unknown Error'))
+        except Exception as e:
+            raise UploaderError(e)
+        
+        return False

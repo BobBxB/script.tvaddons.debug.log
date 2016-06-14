@@ -41,7 +41,7 @@ class Uploader(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def send_email(self, results):
+    def send_email(self, email, results):
         '''
         Return True if email succeeds, False if it fails, or None if email isn't supported
         '''

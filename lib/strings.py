@@ -22,5 +22,6 @@ STRINGS = {
     'upload_question': 30002,
     'email_successful': 30003,
     'email_failed': 30004,
-    'email_unsupported': 30005
+    'email_unsupported': 30005,
+    'email_not_configured': 30006
 }

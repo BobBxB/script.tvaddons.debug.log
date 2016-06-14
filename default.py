@@ -36,7 +36,7 @@ FILES = [
     ('kodi.old.log', 'kodi.old.log')
 ]
 
-EMAIL_SENT = {True: i18n('email_successful'), False: i18n('email_failed'), None: i18n('email_unsupported')}
+EMAIL_SENT = {True: i18n('email_successful'), False: i18n('email_failed'), None: i18n('email_unsupported'), '': i18n('email_not_configured')}
 SERVER_ORDER = {'tvaddons': 1, 'pastebin': 2, 'pastie': 3}
 
 def __get_logs():
@@ -78,15 +78,21 @@ def upload_logs():
                 log_utils.log('No successful upload for: %s Last Error: %s' % (name, last_error), log_utils.LOGWARNING)
             
     if results:
-        for service in results:
-            success = results[service]['service'].send_email(results[service]['results'])
-            results[service]['email'] = success
+        email = kodi.get_setting('email')
+        if email:
+            for service in results:
+                try:
+                    success = results[service]['service'].send_email(email, results[service]['results'])
+                    results[service]['email'] = success
+                except UploaderError as e:
+                    log_utils.log('Email Error: (%s): %s' % (service, e), log_utils.LOGWARNING)
+                    results[service]['email'] = False
 
         args = [i18n('logs_uploaded')]
         for _, name in FILES:
             for service in results:
                 if name in results[service]['results']:
-                    line = '%s: %s [I](%s)[/I]' % (name, results[service]['results'][name]['result'], EMAIL_SENT[results[service]['email']])
+                    line = '%s: %s [I](%s)[/I]' % (name, results[service]['results'][name]['result'], EMAIL_SENT[results[service].get('email', '')])
                     args.append(line)
                     log_utils.log('Log Uploaded: %s: %s' % (name, results[service]['results'][name]['result']), log_utils.LOGNOTICE)
                     

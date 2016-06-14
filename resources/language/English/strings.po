@@ -37,6 +37,10 @@ msgctxt "#30005"
 msgid "Email Not Supported"
 msgstr ""
 
+msgctxt "#30006"
+msgid "Email Not Configured"
+msgstr ""
+
 msgctxt "#30500"
 msgid "Destination Email Address"
 msgstr ""
