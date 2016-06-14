@@ -69,7 +69,7 @@ def upload_logs():
                     log_service = klass()
                     result = log_service.upload_log(log)
                     results[log_service.name] = results.get(log_service.name, {'service': log_service, 'results': {}})
-                    results[log_service.name]['results'][name] = {'result': result}
+                    results[log_service.name]['results'][name] = result
                     break
                 except UploaderError as e:
                     log_utils.log('Uploader Error: (%s) %s: %s' % (log_service.__class__.__name__, name, e), log_utils.LOGWARNING)
@@ -92,9 +92,9 @@ def upload_logs():
         for _, name in FILES:
             for service in results:
                 if name in results[service]['results']:
-                    line = '%s: %s [I](%s)[/I]' % (name, results[service]['results'][name]['result'], EMAIL_SENT[results[service].get('email', '')])
+                    line = '%s: %s [I](%s)[/I]' % (name, results[service]['results'][name], EMAIL_SENT[results[service].get('email', '')])
                     args.append(line)
-                    log_utils.log('Log Uploaded: %s: %s' % (name, results[service]['results'][name]['result']), log_utils.LOGNOTICE)
+                    log_utils.log('Log Uploaded: %s: %s' % (name, results[service]['results'][name]), log_utils.LOGNOTICE)
                     
         xbmcgui.Dialog().ok(*args)
     else:
