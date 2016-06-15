@@ -66,7 +66,7 @@ class TvaddonsUploader(uploader.Uploader):
             html = res.read()
             js_data = json.loads(html)
             if 'result' in js_data:
-                if js_data['result']:
+                if js_data['result'] == 'success':
                     return True
                 else:
                     raise UploaderError(js_data.get('msg', 'Unknown Error'))
