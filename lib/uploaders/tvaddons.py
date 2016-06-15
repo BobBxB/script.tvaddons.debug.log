@@ -23,7 +23,7 @@ import uploader
 from uploader import UploaderError
 from .. import log_utils
 
-BASE_URL = 'http://logs.tvaddons.ag/'
+BASE_URL = 'https://logs.tvaddons.ag/'
 EXPIRATION = 21600
 
 class TvaddonsUploader(uploader.Uploader):
@@ -31,7 +31,7 @@ class TvaddonsUploader(uploader.Uploader):
     
     def upload_log(self, log):
         url = '/api/json/create'
-        data = {'data': log, 'language': 'text', 'expire': EXPIRATION}
+        data = {'data': log, 'language': 'kodilog', 'expire': EXPIRATION}
         url = urlparse.urljoin(BASE_URL, url)
         headers = {'Content-Type': 'application/json'}
         req = urllib2.Request(url, data=json.dumps(data), headers=headers)
