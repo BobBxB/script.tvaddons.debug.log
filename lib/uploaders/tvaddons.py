@@ -18,6 +18,8 @@
 import urllib2
 import urlparse
 import urllib
+import StringIO
+import gzip
 import json
 import uploader
 from uploader import UploaderError
@@ -25,16 +27,25 @@ from .. import log_utils
 
 BASE_URL = 'https://logs.tvaddons.ag/'
 EXPIRATION = 21600
+USE_GZIP = False
 
 class TvaddonsUploader(uploader.Uploader):
     name = 'tvaddons'
     
     def upload_log(self, log):
         url = '/api/json/create'
-        data = {'data': log, 'language': 'kodilog', 'expire': EXPIRATION}
         url = urlparse.urljoin(BASE_URL, url)
         headers = {'Content-Type': 'application/json'}
-        req = urllib2.Request(url, data=json.dumps(data), headers=headers)
+        data = {'data': log, 'language': 'kodilog', 'expire': EXPIRATION}
+        data = json.dumps(data)
+        if USE_GZIP:
+            s = StringIO.StringIO()
+            g = gzip.GzipFile(fileobj=s, mode='w')
+            g.write(data)
+            g.close()
+            data = s.getvalue()
+            headers['Content-Encoding'] = 'gzip'
+        req = urllib2.Request(url, data=data, headers=headers)
         try:
             res = urllib2.urlopen(req)
             html = res.read()
