@@ -23,5 +23,6 @@ STRINGS = {
     'email_successful': 30003,
     'email_failed': 30004,
     'email_unsupported': 30005,
-    'email_not_configured': 30006
+    'email_not_configured': 30006,
+    'warning': 30007
 }

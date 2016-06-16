@@ -41,6 +41,10 @@ msgctxt "#30006"
 msgid "Email Not Configured"
 msgstr ""
 
+msgctxt "#30007"
+msgid "*WARNING* Debug Logs may contain sensitive information!"
+msgstr ""
+
 msgctxt "#30500"
 msgid "Destination Email Address"
 msgstr ""

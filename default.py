@@ -28,7 +28,8 @@ from lib.uploaders.uploader import UploaderError
 REPLACES = [
     ('://.+?:.+?@', '//USER:PASSWORD@'),
     ('<user>.+?</user>', '<user>USER</user>'),
-    ('<pass>.+?</pass>', '<pass>PASSWORD</pass>')
+    ('<pass>.+?</pass>', '<pass>PASSWORD</pass>'),
+    ('''&(pass|password|pwd|pin)=([^'"&]+')''', '&\\1=PASSWORD')
 ]
 
 FILES = [
@@ -101,7 +102,7 @@ def upload_logs():
         kodi.notify(i18n('logs_failed') % (last_error), duration=5000)
 
 def __confirm_upload():
-    return xbmcgui.Dialog().yesno(kodi.get_name(), i18n('upload_question'))
+    return xbmcgui.Dialog().yesno(kodi.get_name(), i18n('upload_question'), '', i18n('warning'))
     
 def main(argv=None):
     try:
