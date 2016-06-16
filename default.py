@@ -29,7 +29,7 @@ REPLACES = [
     ('://.+?:.+?@', '//USER:PASSWORD@'),
     ('<user>.+?</user>', '<user>USER</user>'),
     ('<pass>.+?</pass>', '<pass>PASSWORD</pass>'),
-    ('''&(pass|password|pwd|pin)=([^'"&]+')''', '&\\1=PASSWORD')
+    ('''&(pass|password|pwd|pin)=[^'"&]+''', '&\\1=PASSWORD')
 ]
 
 FILES = [
