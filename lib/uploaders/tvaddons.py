@@ -26,7 +26,7 @@ from uploader import UploaderError
 from .. import log_utils
 
 BASE_URL = 'https://logs.tvaddons.ag/'
-EXPIRATION = 21600
+EXPIRATION = 2592000
 USE_GZIP = False
 
 class TvaddonsUploader(uploader.Uploader):
