@@ -26,7 +26,7 @@ from lib.uploaders import *
 from lib.uploaders.uploader import UploaderError
 
 REPLACES = [
-    ('''://[^'"]+:[^'"]+@', '//USER:PASSWORD@'''),
+    ('''://[^'"/]+:[^'"/]+@', '//USER:PASSWORD@'''),
     ('<(user|username)>.+?</\\1>', '<\\1>USER</\\1>'),
     ('<(pass|password)>.+?</\\1>', '<\\1>PASSWORD</\\1>'),
     ('''&(pass|password|pwd|pin)=[^'"&]+''', '&\\1=PASSWORD')
