@@ -34,7 +34,9 @@ REPLACES = [
 
 FILES = [
     ('kodi.log', 'kodi.log'),
-    ('kodi.old.log', 'kodi.old.log')
+    ('kodi.old.log', 'kodi.old.log'),
+    ('spmc.log', 'spmc.log'),
+    ('spmc.old.log', 'spmc.old.log')
 ]
 
 EMAIL_SENT = {True: i18n('email_successful'), False: i18n('email_failed'), None: i18n('email_unsupported'), '': i18n('email_not_configured')}
