@@ -69,3 +69,23 @@ msgctxt "#30501"
 msgid "Include Old Kodi Log"
 msgstr ""
 
+msgctxt "#30502"
+msgid "Log Uploaders"
+msgstr ""
+
+msgctxt "#30503"
+msgid "Enable TVAddons.ag"
+msgstr ""
+
+msgctxt "#30504"
+msgid "Enable Dropbox"
+msgstr ""
+
+msgctxt "#30505"
+msgid "Enable Pastebin"
+msgstr ""
+
+msgctxt "#30506"
+msgid "Enable Pastie"
+msgstr ""
+

@@ -59,7 +59,7 @@ def upload_logs():
     last_error = ''
     uploaders = uploader.Uploader.__class__.__subclasses__(uploader.Uploader)
     uploaders = [klass for klass in uploaders if
-                 SERVER_ORDER.get(klass.name, 100) and kodi.get_setting('%s_enable' % (klass.name)) == 'true']
+                 SERVER_ORDER.get(klass.name, 100) and kodi.get_setting('enable_%s' % (klass.name)) == 'true']
     uploaders.sort(key=lambda x: SERVER_ORDER.get(x.name, 100))
     if not uploaders: last_error = 'No Uploaders Enabled'
     for log in logs:
@@ -74,7 +74,7 @@ def upload_logs():
             for klass in uploaders:
                 try:
                     log_service = klass()
-                    result = log_service.upload_log(log)
+                    result = log_service.upload_log(log, name)
                     results[log_service.name] = results.get(log_service.name, {'service': log_service, 'results': {}})
                     results[log_service.name]['results'][name] = result
                     break
