@@ -36,7 +36,7 @@ class NoRedirection(urllib2.HTTPErrorProcessor):
 class PastieUploader(uploader.Uploader):
     name = 'pastie'
 
-    def upload_log(self, log):
+    def upload_log(self, log, name=None):
         url = '/pastes'
         data = {'paste[body]': log, 'paste[parser]': 'plain_text', 'paste[authorization]': 'burger', 'paste[restricted]': 1}
         headers = {'User-Agent': USER_AGENT}

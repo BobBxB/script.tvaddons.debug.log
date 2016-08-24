@@ -29,7 +29,7 @@ EXPIRATION = '1W'
 class PastebinUploader(uploader.Uploader):
     name = 'pastebin'
 
-    def upload_log(self, log):
+    def upload_log(self, log, name=None):
         url = '/api/api_post.php'
         data = {'api_dev_key': API_KEY, 'api_option': 'paste', 'api_paste_code': log, 'api_paste_name': 'Kodi Log',
                 'api_paste_private': 1, 'api_paste_expire_date': EXPIRATION}

@@ -34,9 +34,10 @@ class Uploader(object):
     name = ''
 
     @abc.abstractmethod
-    def upload_log(self, log):
+    def upload_log(self, log, name=None):
         '''
         Return the url of the log, or raise a UploaderError on failure
+        The name of the log is optional and may or may not be used by the uploader
         '''
         raise NotImplementedError
 

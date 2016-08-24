@@ -45,6 +45,22 @@ msgctxt "#30007"
 msgid "*WARNING* Debug Logs may contain sensitive information!"
 msgstr ""
 
+msgctxt "#30008"
+msgid "Dropbox Authorization"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Visit this link: [COLOR blue]%s[/COLOR] and Select 'Allow'"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Then press OK below and enter the PIN shown"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Enter PIN"
+msgstr ""
+
 msgctxt "#30500"
 msgid "Destination Email Address"
 msgstr ""

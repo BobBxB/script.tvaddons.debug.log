@@ -32,7 +32,7 @@ USE_GZIP = False
 class TvaddonsUploader(uploader.Uploader):
     name = 'tvaddons'
     
-    def upload_log(self, log):
+    def upload_log(self, log, name=None):
         url = '/api/json/create'
         url = urlparse.urljoin(BASE_URL, url)
         headers = {'Content-Type': 'application/json'}

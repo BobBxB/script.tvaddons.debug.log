@@ -24,5 +24,9 @@ STRINGS = {
     'email_failed': 30004,
     'email_unsupported': 30005,
     'email_not_configured': 30006,
-    'warning': 30007
+    'warning': 30007,
+    'dropbox_auth': 30008,
+    'dropbox_visit': 30009,
+    'dropbox_pin': 30010,
+    'enter_pin': 30011
 }

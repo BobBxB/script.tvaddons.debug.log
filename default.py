@@ -42,7 +42,7 @@ FILES = [
 ]
 
 EMAIL_SENT = {True: i18n('email_successful'), False: i18n('email_failed'), None: i18n('email_unsupported'), '': i18n('email_not_configured')}
-SERVER_ORDER = {'tvaddons': 1, 'pastebin': 2, 'pastie': 3}
+SERVER_ORDER = {'tvaddons': 0, 'pastebin': 0, 'dropbox': 3, 'pastie': 0}
 
 def __get_logs():
     logs = []
@@ -62,7 +62,7 @@ def upload_logs():
     uploaders.sort(key=lambda x: SERVER_ORDER.get(x.name, 100))
     for log in logs:
         full_path, name = log
-        if name != 'kodi.old.log' or kodi.get_setting('include_old') == 'true':
+        if '.old.' not in name or kodi.get_setting('include_old') == 'true':
             with open(full_path, 'r') as f:
                 log = f.read()
                 

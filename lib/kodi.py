@@ -163,6 +163,9 @@ def i18n(string_id):
         xbmc.log('%s: Failed String Lookup: %s (%s)' % (get_name(), string_id, e), xbmc.LOGWARNING)
         return string_id
 
+def ok(heading, line1, line2='', line3=''):
+    return xbmcgui.Dialog().ok(heading, line1, line2, line3)
+
 class WorkingDialog(object):
     def __init__(self):
         xbmc.executebuiltin('ActivateWindow(busydialog)')
