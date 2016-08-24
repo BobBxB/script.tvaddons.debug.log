@@ -6,10 +6,10 @@ import json
 import log_utils
 
 USER_AGENT = 'TVA Dropbox API'
-API_HOST = "api.dropbox.com"
+API_HOST = 'api.dropboxapi.com'
 WEB_HOST = "www.dropbox.com"
-API_CONTENT_HOST = "api-content.dropbox.com"
-API_NOTIFICATION_HOST = "api-notify.dropbox.com"
+API_CONTENT_HOST = 'content.dropboxapi.com'
+API_NOTIFICATION_HOST = 'notify.dropboxapi.com'
 API_VERSION = 1
 _OAUTH2_ACCESS_TOKEN_PATTERN = re.compile(r'\A[-_~/A-Za-z0-9\.\+]+=*\Z')  # From the "Bearer" token spec, RFC 6750.
 
@@ -19,54 +19,16 @@ class ErrorResponse(Exception):
         self.reason = e.reason
 
 class Client(object):
-    def build_path(self, target, params=None):
-        """Build the path component for an API URL.
+    def _build_url(self, host, target, params=None):
+        if isinstance(target, unicode):
+            target = target.encode('utf-8')
 
-        This method urlencodes the parameters, adds them
-        to the end of the target url, and puts a marker for the API
-        version in front.
-
-        Parameters
-            target
-              A target url (e.g. '/files') to build upon.
-            params
-              Optional dictionary of parameters (name to value).
-
-        Returns
-            The path and parameters components of an API URL.
-        """
-        if sys.version_info < (3,) and type(target) == unicode:
-            target = target.encode("utf8")
-
-        target_path = urllib.quote(target)
-
-        params = params or {}
-        params = params.copy()
-
+        url = 'https://%s%s' % (host, target)
         if params:
-            query_string = params_to_urlencoded(params)
-            return "/%s%s?%s" % (API_VERSION, target_path, query_string)
-        else:
-            return "/%s%s" % (API_VERSION, target_path)
-
-    def build_url(self, host, target, params=None):
-        """Build an API URL.
-
-        This method adds scheme and hostname to the path
-        returned from build_path.
-
-        Parameters
-            target
-              A target url (e.g. '/files') to build upon.
-            params
-              Optional dictionary of parameters (name to value).
-
-        Returns
-            The full API URL.
-        """
-        return "https://%s%s" % (host, self.build_path(target, params))
+            url += '?' + params_to_urlencoded(params)
+        return url
     
-    def _call_dropbox(self, target, params=None, post_data=None, body=None, headers=None, method=None,
+    def _call_dropbox(self, target, params=None, data=None, headers=None, method=None,
                       auth=True, content_server=False, notification_server=False):
         if params is None: params = {}
         if headers is None: headers = {}
@@ -77,25 +39,23 @@ class Client(object):
             host = API_NOTIFICATION_HOST
         else:
             host = API_HOST
-
+            
+        url = self._build_url(host, target, params)
         headers['User-Agent'] = USER_AGENT
         if auth:
             headers['Authorization'] = 'Bearer %s' % (self.token)
 
-        if method in ('GET', 'PUT'):
-            url = self.build_url(host, target, params)
-        else:
-            url = self.build_url(host, target)
-
-        if body and method == 'PUT':
-            data = body
-            headers['Content-Length'] = len(body)
-            headers['Content-Type'] = 'application/octet-stream'
-        elif post_data is not None:
-            if isinstance(post_data, basestring):
-                data = post_data
+        if data:
+            if 'Content-Type' not in headers:
+                headers['Content-Type'] = 'application/octet-stream'
+                
+            if isinstance(data, basestring):
+                data = data
             else:
-                data = urllib.urlencode(post_data, True)
+                data = urllib.urlencode(data, True)
+
+            if method == 'PUT':
+                headers['Content-Length'] = len(data)
 
         try:
             log_utils.log('url: |%s| method: |%s| data: |%s| headers: |%s|' % (url, method, len(data), headers))
@@ -116,108 +76,24 @@ class DropboxClient(Client):
     def __init__(self, oauth2_access_token):
         self.token = oauth2_access_token
     
-    def put_file(self, full_path, file_obj, overwrite=False, parent_rev=None):
-        """Upload a file.
-
-        A typical use case would be as follows::
-
-            f = open('working-draft.txt', 'rb')
-            response = client.put_file('/magnum-opus.txt', f)
-            print "uploaded:", response
-
-        which would return the metadata of the uploaded file, similar to::
-
-            {
-                'bytes': 77,
-                'icon': 'page_white_text',
-                'is_dir': False,
-                'mime_type': 'text/plain',
-                'modified': 'Wed, 20 Jul 2011 22:04:50 +0000',
-                'path': '/magnum-opus.txt',
-                'rev': '362e2029684fe',
-                'revision': 221922,
-                'root': 'dropbox',
-                'size': '77 bytes',
-                'thumb_exists': False
-            }
-
-        Parameters
-            full_path
-              The full path to upload the file to, *including the file name*.
-              If the destination folder does not yet exist, it will be created.
-            file_obj
-              A file-like object to upload. If you would like, you can pass a string as file_obj.
-            overwrite
-              Whether to overwrite an existing file at the given path. (Default ``False``.)
-              If overwrite is False and a file already exists there, Dropbox
-              will rename the upload to make sure it doesn't overwrite anything.
-              You need to check the metadata returned for the new name.
-              This field should only be True if your intent is to potentially
-              clobber changes to a file that you don't know about.
-            parent_rev
-              Optional rev field from the 'parent' of this upload.
-              If your intent is to update the file at the given path, you should
-              pass the parent_rev parameter set to the rev value from the most recent
-              metadata you have of the existing file at that path. If the server
-              has a more recent version of the file at the specified path, it will
-              automatically rename your uploaded file, spinning off a conflict.
-              Using this parameter effectively causes the overwrite parameter to be ignored.
-              The file will always be overwritten if you send the most recent parent_rev,
-              and it will never be overwritten if you send a less recent one.
-
-        Returns
-              A dictionary containing the metadata of the newly uploaded file.
-
-              For a detailed description of what this call returns, visit:
-              https://www.dropbox.com/developers/core/docs#files-put
-
-        Raises
-              A :class:`ErrorResponse` with an HTTP status of:
-
-              - 400: Bad request (may be due to many things; check e.error for details).
-              - 503: User over quota.
-        """
-        path = format_path('/files_put/auto/%s' % (full_path))
-        params = {'overwrite': bool(overwrite)}
-        if parent_rev is not None:
-            params['parent_rev'] = parent_rev
+    def upload_file(self, full_path, file_obj, overwrite=True, autorename=False, mute=False):
+        url = '/2/files/upload'
+        mode = 'overwrite' if overwrite else 'add'
+        db_args = {'path': format_path(full_path), 'mode': mode, 'autorename': autorename, 'mute': mute}
+        headers = {'Dropbox-API-Arg': json.dumps(db_args)}
 
         if hasattr(file_obj, 'read'):
-            body = file_obj.read()
+            data = file_obj.read()
         else:
-            body = file_obj
+            data = file_obj
         
-        return self._call_dropbox(path, params, body=body, method='PUT', content_server=True)
+        return self._call_dropbox(url, data=data, headers=headers, content_server=True)
 
     def share(self, path, short_url=True):
-        """Create a shareable link to a file or folder.
-
-        Shareable links created on Dropbox are time-limited, but don't require any
-        authentication, so they can be given out freely. The time limit should allow
-        at least a day of shareability, though users have the ability to disable
-        a link from their account if they like.
-
-        Parameters
-            path
-              The file or folder to share.
-
-        Returns
-              A dictionary that looks like the following example::
-
-                {'url': u'https://db.tt/c0mFuu1Y', 'expires': 'Tue, 01 Jan 2030 00:00:00 +0000'}
-
-              For a detailed description of what this call returns, visit:
-              https://www.dropbox.com/developers/core/docs#shares
-
-        Raises
-              A :class:`ErrorResponse` with an HTTP status of:
-
-              - 400: Bad request (may be due to many things; check e.error for details).
-              - 404: Unable to find the file at the given path.
-        """
-        path = format_path('/shares/auto/%s' % (path))
-        data = {'short_url': short_url}
-        return self._call_dropbox(path, post_data=data)
+        url = '/2/sharing/create_shared_link'
+        data = {'path': path, 'short_url': short_url}
+        headers = {'Content-Type': 'application/json'}
+        return self._call_dropbox(url, data=json.dumps(data), headers=headers)
 
 class DropboxOAuth2FlowBase(Client):
 
@@ -232,16 +108,16 @@ class DropboxOAuth2FlowBase(Client):
         if state is not None:
             params['state'] = state
 
-        return self.build_url(WEB_HOST, '/oauth2/authorize', params)
+        return self._build_url(WEB_HOST, '/oauth2/authorize', params)
 
     def _finish(self, code, redirect_uri):
-        path = '/oauth2/token'
+        url = '/oauth2/token'
         data = {'grant_type': 'authorization_code', 'code': code,
                 'client_id': self.consumer_key, 'client_secret': self.consumer_secret}
         if redirect_uri is not None:
             data['redirect_uri'] = redirect_uri
-
-        response = self._call_dropbox(path, post_data=data, auth=False)
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        response = self._call_dropbox(url, data=data, headers=headers, auth=False)
         return response["access_token"], response["uid"]
 
 class DropboxOAuth2FlowNoRedirect(DropboxOAuth2FlowBase):

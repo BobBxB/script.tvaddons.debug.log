@@ -42,7 +42,7 @@ FILES = [
 ]
 
 EMAIL_SENT = {True: i18n('email_successful'), False: i18n('email_failed'), None: i18n('email_unsupported'), '': i18n('email_not_configured')}
-SERVER_ORDER = {'tvaddons': 0, 'pastebin': 0, 'dropbox': 3, 'pastie': 0}
+SERVER_ORDER = {'tvaddons': 1, 'pastebin': 3, 'dropbox': 2, 'pastie': 4}
 
 def __get_logs():
     logs = []
@@ -58,8 +58,10 @@ def upload_logs():
     results = {}
     last_error = ''
     uploaders = uploader.Uploader.__class__.__subclasses__(uploader.Uploader)
-    uploaders = [klass for klass in uploaders if SERVER_ORDER.get(klass.name, 100)]
+    uploaders = [klass for klass in uploaders if
+                 SERVER_ORDER.get(klass.name, 100) and kodi.get_setting('%s_enable' % (klass.name)) == 'true']
     uploaders.sort(key=lambda x: SERVER_ORDER.get(x.name, 100))
+    if not uploaders: last_error = 'No Uploaders Enabled'
     for log in logs:
         full_path, name = log
         if '.old.' not in name or kodi.get_setting('include_old') == 'true':

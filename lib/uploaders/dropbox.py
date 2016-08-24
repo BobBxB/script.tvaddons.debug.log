@@ -24,7 +24,7 @@ from .. import log_utils
 
 APP_KEY = '6943gzynff6zkcz'
 APP_SECRET = 'fp8d96951grzf78'
-SHORT_URL = 'http://goo.gl/u26N0x'
+SHORT_URL = 'http://goo.gl/k4uR11'
 
 class DropboxUploader(uploader.Uploader):
     name = 'dropbox'
@@ -39,7 +39,7 @@ class DropboxUploader(uploader.Uploader):
             if token:
                 full_path = '/%s' % (name)
                 db = dropbox_api.DropboxClient(token)
-                db.put_file(full_path, log, overwrite=True)
+                db.upload_file(full_path, log, overwrite=True)
                 res = db.share(full_path)
                 return res.get('url')
         except dropbox_api.ErrorResponse as e:
