@@ -15,16 +15,19 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import time
 import uploader
 from uploader import UploaderError
 from .. import dropbox_api
+from .. import db_auth
+from ..db_auth import AUTH_URL
 from .. import kodi
 from ..kodi import i18n
 from .. import log_utils
 
 APP_KEY = '6943gzynff6zkcz'
 APP_SECRET = 'fp8d96951grzf78'
-SHORT_URL = 'http://goo.gl/k4uR11'
+INTERVALS = 5
 
 class DropboxUploader(uploader.Uploader):
     name = 'dropbox'
@@ -42,25 +45,51 @@ class DropboxUploader(uploader.Uploader):
                 db.upload_file(full_path, log, overwrite=True)
                 res = db.share(full_path)
                 return res.get('url')
+                
         except dropbox_api.ErrorResponse as e:
             raise UploaderError('Upload Failed: (%s): %s' % (e.status, e.reason))
     
     def __authorize(self):
-        auth_flow = dropbox_api.DropboxOAuth2FlowNoRedirect(APP_KEY, APP_SECRET)
+        auth_flow = dropbox_api.DropboxOAuth2Flow(APP_KEY, APP_SECRET)
         authorize_url = auth_flow.start()
-        line1 = i18n('dropbox_visit') % (SHORT_URL)
-        log_utils.log('Visit: %s' % (authorize_url), log_utils.LOGNOTICE)
-        kodi.ok(i18n('dropbox_auth'), line1=line1, line2=i18n('dropbox_pin'))
-        auth_code = kodi.get_keyboard(i18n('enter_pin'))
-        if not auth_code:
-            raise UploaderError('Authorization Aborted')
-        
-        try:
-            access_token, _user_id = auth_flow.finish(auth_code)
-            kodi.set_setting('dropbox_token', access_token)
-            return access_token
-        except dropbox_api.ErrorResponse as e:
-            raise UploaderError('Authorization Failed (%s): %s' % (e.status, e.reason))
+        with db_auth.DbAuth(authorize_url) as auth:
+            result = auth.start_session()
+            if result is None:
+                raise UploaderError('Unable to start db auth session')
+            else:
+                pin, redirect_uri = result
+            
+            line1 = i18n('dropbox_visit') % (AUTH_URL)
+            line2 = i18n('dropbox_pin') % (pin)
+            line3 = i18n('directions')
+            with kodi.ProgressDialog(i18n('dropbox_auth'), line1=line1, line2=line2, line3=line3) as pd:
+                pd.update(100)
+                start = time.time()
+                expires = time_left = 60  # give user 1 minute
+                interval = 5  # check url every 5 seconds
+                while time_left > 0:
+                    for _ in range(INTERVALS):
+                        kodi.sleep(interval * 1000 / INTERVALS)
+                        if pd.is_canceled():
+                            raise UploaderError('Authorization Aborted')
+                        
+                        time_left = expires - int(time.time() - start)
+                        if time_left < 0: time_left = 0
+                        progress = time_left * 100 / expires
+                        pd.update(progress)
+                    
+                    result = auth.get_code(pin)
+                    if result.get('success'):
+                        if result.get('auth_code'):
+                            log_utils.log(result['auth_code'])
+                            try:
+                                access_token, _user_id = auth_flow.finish(result['auth_code'], redirect_uri)
+                                kodi.set_setting('dropbox_token', access_token)
+                                return access_token
+                            except dropbox_api.ErrorResponse as e:
+                                raise UploaderError('Authorization Failed (%s): %s' % (e.status, e.reason))
+                else:
+                    raise UploaderError('Authorization Time Out')
     
     def send_email(self, email, results):
         return None

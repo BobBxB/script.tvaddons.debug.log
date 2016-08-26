@@ -57,7 +57,8 @@ class Client(object):
                 headers['Content-Length'] = len(data)
 
         try:
-            log_utils.log('url: |%s| method: |%s| data: |%s| headers: |%s|' % (url, method, len(data), headers))
+            log_data = len(data) if len(data) > 255 else data
+            log_utils.log('url: |%s| method: |%s| data: |%s| headers: |%s|' % (url, method, log_data, headers))
             request = urllib2.Request(url, data=data, headers=headers)
             if method is not None: request.get_method = lambda: method.upper()
             response = urllib2.urlopen(request)
@@ -119,7 +120,7 @@ class DropboxOAuth2FlowBase(Client):
         response = self._call_dropbox(url, data=data, headers=headers, auth=False)
         return response["access_token"], response["uid"]
 
-class DropboxOAuth2FlowNoRedirect(DropboxOAuth2FlowBase):
+class DropboxOAuth2Flow(DropboxOAuth2FlowBase):
     """
     OAuth 2 authorization helper for apps that can't provide a redirect URI
     (such as the command-line example apps).
@@ -165,7 +166,7 @@ class DropboxOAuth2FlowNoRedirect(DropboxOAuth2FlowBase):
         """
         return self._get_authorize_url(None, None)
 
-    def finish(self, code):
+    def finish(self, code, redirect_uri=None):
         """
         If the user approves your app, they will be presented with an "authorization code".  Have
         the user copy/paste that authorization code into your app and then call this method to
@@ -183,7 +184,7 @@ class DropboxOAuth2FlowNoRedirect(DropboxOAuth2FlowBase):
         Raises
             The same exceptions as :meth:`DropboxOAuth2Flow.finish()`.
         """
-        return self._finish(code, None)
+        return self._finish(code, redirect_uri)
 
 
 def params_to_urlencoded(params):

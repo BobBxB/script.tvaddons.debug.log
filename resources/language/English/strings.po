@@ -50,15 +50,15 @@ msgid "Dropbox Authorization"
 msgstr ""
 
 msgctxt "#30009"
-msgid "Visit this link: [COLOR blue]%s[/COLOR] and Select 'Allow'"
+msgid "Visit this link: [COLOR blue]%s[/COLOR]"
 msgstr ""
 
 msgctxt "#30010"
-msgid "Then press OK below and enter the PIN shown"
+msgid "Then enter this PIN: %s"
 msgstr ""
 
 msgctxt "#30011"
-msgid "Enter PIN"
+msgid "Then follow the directions to authorize access to your dropbox."
 msgstr ""
 
 msgctxt "#30500"

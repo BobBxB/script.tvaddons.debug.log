@@ -28,5 +28,5 @@ STRINGS = {
     'dropbox_auth': 30008,
     'dropbox_visit': 30009,
     'dropbox_pin': 30010,
-    'enter_pin': 30011
+    'directions': 30011
 }
