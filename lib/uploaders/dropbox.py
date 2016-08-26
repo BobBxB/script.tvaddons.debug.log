@@ -79,15 +79,13 @@ class DropboxUploader(uploader.Uploader):
                         pd.update(progress)
                     
                     result = auth.get_code(pin)
-                    if result.get('success'):
-                        if result.get('auth_code'):
-                            log_utils.log(result['auth_code'])
-                            try:
-                                access_token, _user_id = auth_flow.finish(result['auth_code'], redirect_uri)
-                                kodi.set_setting('dropbox_token', access_token)
-                                return access_token
-                            except dropbox_api.ErrorResponse as e:
-                                raise UploaderError('Authorization Failed (%s): %s' % (e.status, e.reason))
+                    if result.get('success') and result.get('auth_code'):
+                        try:
+                            access_token, _user_id = auth_flow.finish(result['auth_code'], redirect_uri)
+                            kodi.set_setting('dropbox_token', access_token)
+                            return access_token
+                        except dropbox_api.ErrorResponse as e:
+                            raise UploaderError('Authorization Failed (%s): %s' % (e.status, e.reason))
                 else:
                     raise UploaderError('Authorization Time Out')
     
