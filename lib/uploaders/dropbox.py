@@ -62,32 +62,20 @@ class DropboxUploader(uploader.Uploader):
             line1 = i18n('dropbox_visit') % (AUTH_URL)
             line2 = i18n('dropbox_pin') % (pin)
             line3 = i18n('directions')
-            with kodi.ProgressDialog(i18n('dropbox_auth'), line1=line1, line2=line2, line3=line3) as pd:
-                pd.update(100)
-                start = time.time()
-                expires = time_left = 60  # give user 1 minute
-                interval = 5  # check url every 5 seconds
-                while time_left > 0:
-                    for _ in range(INTERVALS):
-                        kodi.sleep(interval * 1000 / INTERVALS)
-                        if pd.is_canceled():
-                            raise UploaderError('Authorization Aborted')
-                        
-                        time_left = expires - int(time.time() - start)
-                        if time_left < 0: time_left = 0
-                        progress = time_left * 100 / expires
-                        pd.update(progress)
-                    
-                    result = auth.get_code(pin)
-                    if result.get('success') and result.get('auth_code'):
-                        try:
-                            access_token, _user_id = auth_flow.finish(result['auth_code'], redirect_uri)
-                            kodi.set_setting('dropbox_token', access_token)
-                            return access_token
-                        except dropbox_api.ErrorResponse as e:
-                            raise UploaderError('Authorization Failed (%s): %s' % (e.status, e.reason))
-                else:
-                    raise UploaderError('Authorization Time Out')
+            with kodi.CountdownDialog(i18n('dropbox_auth'), line1=line1, line2=line2, line3=line3) as cd:
+                cd.start(self.__check_auth, [pin, auth, auth_flow, redirect_uri])
+
+        raise UploaderError('Authorization Time Out')
+                
+    def __check_auth(self, pin, auth, auth_flow, redirect_uri):
+        result = auth.get_code(pin)
+        if result.get('success') and result.get('auth_code'):
+            try:
+                access_token, _user_id = auth_flow.finish(result['auth_code'], redirect_uri)
+                kodi.set_setting('dropbox_token', access_token)
+                return access_token
+            except dropbox_api.ErrorResponse as e:
+                raise UploaderError('Authorization Failed (%s): %s' % (e.status, e.reason))
     
     def send_email(self, email, results):
         return None
