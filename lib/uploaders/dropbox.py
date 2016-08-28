@@ -63,7 +63,9 @@ class DropboxUploader(uploader.Uploader):
             line2 = i18n('dropbox_pin') % (pin)
             line3 = i18n('directions')
             with kodi.CountdownDialog(i18n('dropbox_auth'), line1=line1, line2=line2, line3=line3) as cd:
-                cd.start(self.__check_auth, [pin, auth, auth_flow, redirect_uri])
+                token = cd.start(self.__check_auth, [pin, auth, auth_flow, redirect_uri])
+                if token:
+                    return token
 
         raise UploaderError('Authorization Time Out')
                 

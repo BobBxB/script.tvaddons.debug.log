@@ -21,7 +21,7 @@ import json
 import log_utils
 import uuid
 
-AUTH_URL = 'http://localhost:8080/db_auth.php'
+AUTH_URL = 'https://logs.tvaddons.ag/db_auth.php'
 
 class ErrorResponse(Exception):
     def __init__(self, e):
