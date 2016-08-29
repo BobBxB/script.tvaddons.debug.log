@@ -42,7 +42,7 @@ FILES = [
 ]
 
 EMAIL_SENT = {True: i18n('email_successful'), False: i18n('email_failed'), None: i18n('email_unsupported'), '': i18n('email_not_configured')}
-SERVER_ORDER = {'tvaddons': 1, 'pastebin': 3, 'dropbox': 2, 'pastie': 4}
+SERVER_ORDER = {'tvaddons': 1, 'pastebin': 3, 'dropbox': 2, 'ubuntu': 4}
 
 def __get_logs():
     logs = []

@@ -86,6 +86,6 @@ msgid "Enable Pastebin"
 msgstr ""
 
 msgctxt "#30506"
-msgid "Enable Pastie"
+msgid "Enable Ubuntu"
 msgstr ""
 

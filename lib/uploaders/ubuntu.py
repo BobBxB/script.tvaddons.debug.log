@@ -16,44 +16,41 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import urllib2
-import urlparse
 import urllib
 import re
 import uploader
 from uploader import UploaderError
 from .. import log_utils
 
-BASE_URL = 'http://pastie.org'
+BASE_URL = 'https://paste.ubuntu.com'
 USER_AGENT = "Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko"
 
 class NoRedirection(urllib2.HTTPErrorProcessor):
     def http_response(self, request, response):
         log_utils.log('Stopping Redirect', log_utils.LOGDEBUG)
         return response
-
+ 
     https_response = http_response
-    
-class PastieUploader(uploader.Uploader):
-    name = 'pastie'
+     
+class UbuntuUploader(uploader.Uploader):
+    name = 'ubuntu'
 
     def upload_log(self, log, name=None):
-        url = '/pastes'
-        data = {'paste[body]': log, 'paste[parser]': 'plain_text', 'paste[authorization]': 'burger', 'paste[restricted]': 1}
+        data = {'content': log, 'syntax': 'text', 'poster': 'tvaddons.ag'}
         headers = {'User-Agent': USER_AGENT}
-        url = urlparse.urljoin(BASE_URL, url)
-        req = urllib2.Request(url, data=urllib.urlencode(data), headers=headers)
+        req = urllib2.Request(BASE_URL, data=urllib.urlencode(data), headers=headers)
         try:
             opener = urllib2.build_opener(NoRedirection)
             urllib2.install_opener(opener)
             res = urllib2.urlopen(req)
             if res.getcode() == 302:
                 paste_url = res.info().getheader('location')
-                if re.match('%s/private/[A-Za-z0-9]+' % (BASE_URL), paste_url):
+                if re.match('%s/[A-Za-z0-9]+' % (BASE_URL), paste_url):
                     return paste_url
                 else:
-                    raise UploaderError('Unexcepted url from pastie: %s' % (paste_url))
+                    raise UploaderError('Unexcepted url from ubuntu: %s' % (paste_url))
             else:
-                raise UploaderError('Unexcepted response from pastie: %s' % (res.getcode()), log_utils.LOGWARNING)
+                raise UploaderError('Unexcepted response from ubuntu: %s' % (res.getcode()), log_utils.LOGWARNING)
         except Exception as e:
             raise UploaderError(e)
             

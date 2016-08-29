@@ -8,5 +8,5 @@
     <setting id="enable_tvaddons" type="bool" label="30503" default="true"/>
     <setting id="enable_dropbox" type="bool" label="30504" default="true"/>
     <setting id="enable_pastebin" type="bool" label="30505" default="true"/>
-    <setting id="enable_pastie" type="bool" label="30506" default="true"/>
+    <setting id="enable_ubuntu" type="bool" label="30506" default="true"/>
 </settings>
